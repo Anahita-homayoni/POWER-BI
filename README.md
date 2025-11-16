@@ -1,9 +1,10 @@
 # POWER-BI
-<img width="1283" height="674" alt="image" src="https://github.com/user-attachments/assets/c52278ba-4244-4d82-adc1-713785dc4900" />
 📊 Visualizing Improvement & Negative Trends in Power BI (Step 1)
 
 This repository demonstrates how to show improvement (positive trends) and decline (negative trends) in a Power BI bar chart using DAX measures and conditional formatting.
 The goal is to help analysts highlight which metrics are improving versus declining across time, categories, or KPIs.
+
+<img width="1283" height="674" alt="image" src="https://github.com/user-attachments/assets/c52278ba-4244-4d82-adc1-713785dc4900" />
 
 🧠 Objective
 
