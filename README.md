@@ -264,3 +264,7 @@ Problem	Cause	Fix
 All cells red	Global streak	Use ALLEXCEPT
 Wrong restart	Gap not detected	Month Index logic
 Year totals between Dec/Jan	Column subtotal on	Turn column subtotals off
+
+
+<img width="733" height="534" alt="image" src="https://github.com/user-attachments/assets/22da524a-7c25-44df-beb9-b1b77841251a" />
+
