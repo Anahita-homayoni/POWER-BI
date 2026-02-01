@@ -85,3 +85,182 @@ Now each bar will automatically reflect positive or negative trends based on per
 ⚪ Bars turn gray when there’s no change.
 
 This visual instantly communicates which areas are performing well and which need attention, making dashboards more insightful and actionable.
+
+
+🔥 Power BI – Consecutive Defect Trend Conditional Formatting (DAX)
+
+This project demonstrates how to apply sequential, per-defect conditional formatting in a Power BI Matrix using DAX.
+
+The goal is to color each month based on consecutive defect occurrences, not raw values.
+
+🎯 Business Requirement
+
+For each Defect across Year → Month columns:
+
+Consecutive Month	Color
+1st month	⚪ White
+2nd month	🟡 Light Yellow
+3rd month	🟨 Dark Yellow
+4th month	🟧 Orange
+5th+ month	🔴 Red
+Gap (no defect)	Reset to White
+
+✔ Each defect must be calculated independently
+✔ Gaps reset the sequence
+✔ Year transitions (Dec → Jan) are handled correctly
+
+🧱 Data Model Assumptions
+Tables
+
+Fact Table
+Contains defect records and quantity
+
+Date Table
+Proper calendar table with a relationship to the Fact table
+
+Required Columns
+
+'Date Table'[Date]
+
+'Defect Table'[Defect Description]
+
+Measure: [Sum QTY Cars]
+
+1️⃣ Month Index (continuous timeline)
+
+Creates a numeric month key so that months across years are comparable.
+
+Month Index =
+YEAR ( MIN ( 'Date Table'[Date] ) ) * 12
++ MONTH ( MIN ( 'Date Table'[Date] ) )
+
+2️⃣ Consecutive Defect Streak (PER DEFECT)
+
+This is the core logic.
+It calculates consecutive months without breaking defect context.
+
+Defect Consecutive Streak =
+VAR CurrentMonth = [Month Index]
+
+VAR MonthsWithData =
+    FILTER (
+        CALCULATETABLE (
+            VALUES ( 'Date Table'[Month Index] ),
+            ALLEXCEPT (
+                'Defect Table',
+                'Defect Table'[Defect Description]
+            )
+        ),
+        CALCULATE ( [Sum QTY Cars] ) > 0
+    )
+
+VAR LastBreakMonth =
+    MAXX (
+        FILTER (
+            MonthsWithData,
+            [Month Index] < CurrentMonth
+                && NOT (
+                    [Month Index] + 1
+                        IN MonthsWithData
+                )
+        ),
+        [Month Index]
+    )
+
+RETURN
+IF (
+    [Sum QTY Cars] > 0,
+    COUNTROWS (
+        FILTER (
+            MonthsWithData,
+            [Month Index] <= CurrentMonth
+                && (
+                    ISBLANK ( LastBreakMonth )
+                        || [Month Index] > LastBreakMonth
+                )
+        )
+    )
+)
+
+💡 Why this works
+
+ALLEXCEPT keeps calculation locked to the current defect
+
+Gaps reset the streak
+
+No global streak contamination
+
+Works across years
+
+3️⃣ Conditional Formatting Color Measure
+Defect Color =
+VAR Seq = [Defect Consecutive Streak]
+RETURN
+SWITCH (
+    TRUE(),
+    ISBLANK ( Seq ), BLANK(),
+    Seq = 1, "#FFFFFF",   -- White
+    Seq = 2, "#FFF2CC",   -- Light Yellow
+    Seq = 3, "#FFD966",   -- Dark Yellow
+    Seq = 4, "#F4B183",   -- Orange
+    Seq >= 5, "#C00000"   -- Red
+)
+
+4️⃣ Apply Conditional Formatting in Power BI
+
+Select Matrix visual
+
+Values → [Sum QTY Cars]
+
+Format pane → Conditional formatting
+
+Background color → Format by: Field value
+
+Based on field → Defect Color
+
+🖼 Example Visual (add your screenshot here)
+📷 Image suggestion:
+Matrix with:
+- Rows: Defect Description
+- Columns: Year → Month
+- Values: Sum QTY Cars
+- Background colors showing white → yellow → orange → red
+
+
+Example behavior (Software defect):
+
+Month	Qty	Color
+Feb	4	White
+Mar	3	Light Yellow
+Apr	1	Dark Yellow
+May	21	Orange
+Jun	156	Red
+Jul	12	Red
+Aug	(no data)	Reset
+Sep	16	White
+Oct	3	Light Yellow
+Nov	21	Dark Yellow
+Dec	6	Orange
+🧪 Debug Tip (Highly Recommended)
+
+Add this temporary measure to the matrix:
+
+DEBUG Streak = [Defect Consecutive Streak]
+
+
+You should see:
+
+1 → 2 → 3 → 4 → 5 → reset → 1
+
+
+If not:
+
+Check the defect column in ALLEXCEPT
+
+Check relationships
+
+🚫 Common Mistakes (and Fixes)
+Problem	Cause	Fix
+All cells red	Global streak	Use ALLEXCEPT
+Wrong restart	Gap not detected	Month Index logic
+Year totals between Dec/Jan	Column subtotal on	Turn column subtotals off
