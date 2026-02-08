@@ -268,3 +268,72 @@ Year totals between Dec/Jan	Column subtotal on	Turn column subtotals off
 
 <img width="733" height="534" alt="image" src="https://github.com/user-attachments/assets/22da524a-7c25-44df-beb9-b1b77841251a" />
 
+
+
+🔷🔷 DYNAMIC COLUMN RENAME USING COLUMN INDEX IN POWER QUERY 🔷🔷
+🟦 Step 1: Promote Headers
+
+First, promote the headers from your source table.
+
+= Table.PromoteHeaders(LOG_Sheet, [PromoteAllScalars=true])
+🟦 Custom Step 1: Get the List of Column Names
+
+Click on fx to create a new step and enter the following formula:
+
+= Table.ColumnNames(#"Promoted Headers")
+
+✅ This step returns a list of all column headers.
+
+🟦 Custom Step 2: Reference a Specific Column by Index
+
+Power Query lists use zero-based indexing, meaning the first column starts at 0.
+
+Example (to get the 12th column):
+
+= Table.ColumnNames(#"Promoted Headers"){11}
+
+⚠️ Important:
+Column numbering starts from 0, not 1.
+
+This allows us to dynamically identify the column header we want to rename.
+
+🟦 Custom Step 3: Rename the Column Dynamically
+1️⃣ Insert a New Step
+
+Click fx again and reference the promoted headers:
+
+= #"Promoted Headers"
+2️⃣ Rename the Column Once (Auto-Generated Step)
+
+Manually rename the column so Power Query generates this formula:
+
+= Table.RenameColumns(
+    Custom2,
+    {{"Protean Number (If applicable)/AM LOG", "Protean Number/AM LOG/URPW NUMBER"}}
+)
+3️⃣ Replace Static Column Name with Dynamic Reference
+
+Now replace the original column name with the dynamic column reference from Custom Step 2:
+
+= Table.RenameColumns(
+    Custom2,
+    {{Table.ColumnNames(#"Promoted Headers"){11}, "Protean Number/AM LOG/URPW NUMBER"}}
+)
+
+✅ This ensures the column is renamed based on its position, not a fixed header name.
+
+🟦 Final Step: Detect Data Types
+
+Go to the Transform tab in the ribbon
+
+Click Detect Data Type
+
+🟦 Cleanup (Optional but Recommended)
+
+After confirming everything works correctly:
+
+Delete Custom Step 1
+
+Delete Custom Step 2
+
+🧹 These steps are no longer required once the column rename is complete.
