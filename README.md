@@ -270,7 +270,11 @@ Year totals between Dec/Jan	Column subtotal on	Turn column subtotals off
 
 
 
+
+
 🔷🔷 DYNAMIC COLUMN RENAME USING COLUMN INDEX IN POWER QUERY 🔷🔷
+
+
 🟦 Step 1: Promote Headers
 
 First, promote the headers from your source table.
