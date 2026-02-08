@@ -337,3 +337,5 @@ Delete Custom Step 1
 Delete Custom Step 2
 
 🧹 These steps are no longer required once the column rename is complete.
+
+helpful youtube video:https://www.youtube.com/watch?v=gJPA_Faotkk
