@@ -343,3 +343,35 @@ Delete Custom Step 2
 🧹 These steps are no longer required once the column rename is complete.
 
 helpful youtube video:https://www.youtube.com/watch?v=gJPA_Faotkk
+
+
+
+
+
+Power BI – Rename or Remove Column (Power Query)
+Rename a Column
+
+UI method:
+
+Go to Transform Data
+Right-click column → Rename
+
+M code:
+
+Table.RenameColumns(#"Previous Step", {{"Old Name", "New Name"}})
+Remove a Column
+
+UI method:
+
+Go to Transform Data
+Select column → Remove Columns
+
+M code:
+
+Table.RemoveColumns(#"Previous Step", {"Column Name"})
+Important Notes
+Column names must match exactly (including spaces/line breaks)
+After renaming/removing, update or delete steps like:
+Changed Type
+Renamed Columns
+Avoid special characters and line breaks in column names
